@@ -9,7 +9,7 @@
 
 3. OR if "2" selected, enter float n, 0.00 < n < 1.00
 
-4. Prompts "1" for multiplicative odds ratio in form of single float
+4. Prompts "1" for multiplicative likelihood ratio in form of a single float
 
 	or "2" for odds ratio in form of likelihood among positive population  
 
