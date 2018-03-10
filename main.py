@@ -62,7 +62,7 @@ if __name__ == "__main__":
                 print "Enter prior odds ratio, second number: "
                 prior_odds_second = int(raw_input())
                 if first_run:
-                    first_prior = float(prior_odds_first)/float(prior_odds_second)
+                    first_prior = float(prior_odds_first)/(float(prior_odds_first) + float(prior_odds_second))
                     first_run = False
                 get_evidence_choice()
             elif prior_choice == "2":
