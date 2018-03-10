@@ -21,7 +21,7 @@
 
 6. If "2" chosen, enter first number in ratio [ENTER] then second number
 
-7. Displays posterior odds and posterior percent likelihood
+7. Displays posterior percent likelihood and posterior odds
 
 8. Prompts "1" for updating with posterior as prior,
 
