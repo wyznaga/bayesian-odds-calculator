@@ -93,13 +93,13 @@ if __name__ == "__main__":
         global first_prior
         # first determine what actual calculation is needed
         if (multi_odds_ratio > 0.0 and prior_percent_prev > 0.0):
-           posterior_likelihood = (multi_odds_ratio * (prior_percent_prev * 100.0))/(100.0 - (first_prior * 100.0))
+            posterior_likelihood = ((prior_percent_prev * 100.0) * multi_odds_ratio)/(((prior_percent_prev * 100.0) * multi_odds_ratio) + (100.0 - (prior_percent_prev * 100.0)))
         elif (multi_odds_ratio > 0.0 and (prior_odds_first > 0 and prior_odds_second > 0)):
-           posterior_likelihood = (multi_odds_ratio * float(prior_odds_first))/(100.0 - (first_prior * 100.0))
+            posterior_likelihood = (float(prior_odds_first) * multi_odds_ratio)/(((float(prior_odds_first) * multi_odds_ratio)) + (float(prior_odds_second)))
         elif ((compare_odds_first > 0 and compare_odds_second > 0) and prior_percent_prev > 0.0):
-           posterior_likelihood = ((float(compare_odds_first) / float(compare_odds_second)) * (prior_percent_prev * 100.0))/(100.0 - (first_prior * 100.0))
+            posterior_likelihood = ((prior_percent_prev * 100.0) * compare_odds_first)/(((prior_percent_prev * 100.0) * compare_odds_first) + ((100.0 - (prior_percent_prev * 100.0)) * compare_odds_second))
         elif ((compare_odds_first > 0 and compare_odds_second > 0) and (prior_odds_first > 0 and prior_odds_second > 0)):
-           posterior_likelihood = ((float(compare_odds_first) / float(compare_odds_second)) * float(prior_odds_first))/(100.0 - (first_prior * 100.0))
+            posterior_likelihood = (prior_odds_first * compare_odds_first)/((prior_odds_first * compare_odds_first) + (prior_odds_second * compare_odds_second))
         else:
             print "Unusable values were input for prior percent, prior odds, multiplicative ratio, or evidentiary odds."
             print "Returning to initial prior data collection..."
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     # deal with displaying the result in multiple formats as described in README
     def display_result():
         print "*"*80
-        print "*"" "*34,"RESULT"," "*34,"*"
+        print "*"," "*34,"RESULT"," "*34,"*"
         print "*"*80
         print "Posterior likelihood: ",posterior_likelihood*100.0,"%"
         print "Posterior odds: ",posterior_likelihood*100.0,":",(100.0 - (posterior_likelihood*100.0))
