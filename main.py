@@ -21,6 +21,38 @@ if __name__ == "__main__":
     print "*"*80
     print
 
+    # deal with displaying the results in multiple formats as described in README
+    def display_results():
+        print "*"*80
+        print "*"," "*34,"RESULT"," "*34,"*"
+        print "*"*80
+        print "Posterior likelihood: ",posterior_likelihood*100.0,"%"
+        print "Posterior odds: ",posterior_likelihood*100.0,":",(100.0 - (posterior_likelihood*100.0))
+
+    # deal with calculating results
+    def calc_results():
+        global multi_odds_ratio
+        global prior_percent_prev
+        global prior_odds_first
+        global prior_odds_second
+        global compare_odds_first
+        global compare_odds_second
+        global posterior_likelihood
+        global first_prior
+        # first determine what actual calculation is needed
+        if (multi_odds_ratio > 0.0 and prior_percent_prev > 0.0):
+            posterior_likelihood = ((prior_percent_prev * 100.0) * multi_odds_ratio)/(((prior_percent_prev * 100.0) * multi_odds_ratio) + (100.0 - (prior_percent_prev * 100.0)))
+        elif (multi_odds_ratio > 0.0 and (prior_odds_first > 0 and prior_odds_second > 0)):
+            posterior_likelihood = (float(prior_odds_first) * multi_odds_ratio)/(((float(prior_odds_first) * multi_odds_ratio)) + (float(prior_odds_second)))
+        elif ((compare_odds_first > 0 and compare_odds_second > 0) and prior_percent_prev > 0.0):
+            posterior_likelihood = ((prior_percent_prev * 100.0) * compare_odds_first)/(((prior_percent_prev * 100.0) * compare_odds_first) + ((100.0 - (prior_percent_prev * 100.0)) * compare_odds_second))
+        elif ((compare_odds_first > 0 and compare_odds_second > 0) and (prior_odds_first > 0 and prior_odds_second > 0)):
+            posterior_likelihood = (prior_odds_first * compare_odds_first)/((prior_odds_first * compare_odds_first) + (prior_odds_second * compare_odds_second))
+        else:
+            print "Unusable values were input for prior percent, prior odds, multiplicative ratio, or evidentiary odds."
+            print "Returning to initial prior data collection..."
+            get_prior_choice()
+
     # define function for dealing with getting evidence to update on since next function ...
         # ... already depends on it
     def get_evidence_choice():
@@ -34,11 +66,13 @@ if __name__ == "__main__":
         if evidence_choice == "1":
             print "Enter multiplicative likehood (odds) ratio, single float, > 0. :"
             multi_odds_ratio = float(raw_input())
+            calc_results()
         elif evidence_choice == "2":
             print "Enter prevalence of reporting among trait-postive population, first number: "
             compare_odds_first = int(raw_input())
             print "Enter prevalence of reporting among trait-positive population, second number: "
             compare_odds_second = int(raw_input())
+            calc_results()
         else:
             print "Invalid menu choice received. Please try again."
             get_evidence_choice()
@@ -79,60 +113,26 @@ if __name__ == "__main__":
             print "Using previous posterior as prior; value: ",iterative_prior
             prior_percent_prev = iterative_prior
             get_evidence_choice()
-    get_prior_choice()
 
-    # deal with calculating results
-    def calc_results():
-        global multi_odds_ratio
-        global prior_percent_prev
-        global prior_odds_first
-        global prior_odds_second
-        global compare_odds_first
-        global compare_odds_second
-        global posterior_likelihood
-        global first_prior
-        # first determine what actual calculation is needed
-        if (multi_odds_ratio > 0.0 and prior_percent_prev > 0.0):
-            posterior_likelihood = ((prior_percent_prev * 100.0) * multi_odds_ratio)/(((prior_percent_prev * 100.0) * multi_odds_ratio) + (100.0 - (prior_percent_prev * 100.0)))
-        elif (multi_odds_ratio > 0.0 and (prior_odds_first > 0 and prior_odds_second > 0)):
-            posterior_likelihood = (float(prior_odds_first) * multi_odds_ratio)/(((float(prior_odds_first) * multi_odds_ratio)) + (float(prior_odds_second)))
-        elif ((compare_odds_first > 0 and compare_odds_second > 0) and prior_percent_prev > 0.0):
-            posterior_likelihood = ((prior_percent_prev * 100.0) * compare_odds_first)/(((prior_percent_prev * 100.0) * compare_odds_first) + ((100.0 - (prior_percent_prev * 100.0)) * compare_odds_second))
-        elif ((compare_odds_first > 0 and compare_odds_second > 0) and (prior_odds_first > 0 and prior_odds_second > 0)):
-            posterior_likelihood = (prior_odds_first * compare_odds_first)/((prior_odds_first * compare_odds_first) + (prior_odds_second * compare_odds_second))
-        else:
-            print "Unusable values were input for prior percent, prior odds, multiplicative ratio, or evidentiary odds."
-            print "Returning to initial prior data collection..."
-            get_prior_choice()
-    calc_results()
+    while True:
+        get_prior_choice()
+        display_results()
 
-    # deal with displaying the result in multiple formats as described in README
-    def display_result():
-        print "*"*80
-        print "*"," "*34,"RESULT"," "*34,"*"
-        print "*"*80
-        print "Posterior likelihood: ",posterior_likelihood*100.0,"%"
-        print "Posterior odds: ",posterior_likelihood*100.0,":",(100.0 - (posterior_likelihood*100.0))
-    display_result()
-
-    # get new task choice
-    def get_new_task():
-        global posterior_likelihood
-        global first_run
-        print "Finally, please select whether you wish to: "
-        print "(1) Calculate a new posterior, with the current posterior as the new prior"
-        print "(2) Enter an entirely new prior and start over with a different calculation"
-        print "(0) Exit"
-        task_choice = raw_input()
-        if task_choice == "1":
-            get_prior_choice(iterative_prior = posterior_likelihood)
-        elif task_choice == "2":
-            first_run = True
-            get_prior_choice()
-        elif task_choice == "0":
-            exit(0)
-        else:
-            print "Invalid menu choice received. Please try again."
-            get_new_task()
-    get_new_task()
-
+        while True:
+            print "Finally, please select whether you wish to: "
+            print "(1) Calculate a new posterior, with the current posterior as the new prior"
+            print "(2) Enter an entirely new prior and start over with a different calculation"
+            print "(0) Exit"
+            task_choice = raw_input()
+            if task_choice == "1":
+                get_prior_choice(iterative_prior = posterior_likelihood)
+                break
+            elif task_choice == "2":
+                first_run = True
+                get_prior_choice()
+                break
+            elif task_choice == "0":
+                exit(0)
+            else:
+                print "Invalid menu choice received. Please try again."
+                continue
