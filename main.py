@@ -42,12 +42,16 @@ if __name__ == "__main__":
         # first determine what actual calculation is needed
         if (multi_odds_ratio > 0.0 and prior_percent_prev > 0.0):
             posterior_likelihood = ((prior_percent_prev * 100.0) * multi_odds_ratio)/(((prior_percent_prev * 100.0) * multi_odds_ratio) + (100.0 - (prior_percent_prev * 100.0)))
+            display_results()
         elif (multi_odds_ratio > 0.0 and (prior_odds_first > 0 and prior_odds_second > 0)):
             posterior_likelihood = (float(prior_odds_first) * multi_odds_ratio)/(((float(prior_odds_first) * multi_odds_ratio)) + (float(prior_odds_second)))
+            display_results()
         elif ((compare_odds_first > 0 and compare_odds_second > 0) and prior_percent_prev > 0.0):
-            posterior_likelihood = ((prior_percent_prev * 100.0) * compare_odds_first)/(((prior_percent_prev * 100.0) * compare_odds_first) + ((100.0 - (prior_percent_prev * 100.0)) * compare_odds_second))
+            posterior_likelihood = float((prior_percent_prev * 100.0) * compare_odds_first)/float(((prior_percent_prev * 100.0) * compare_odds_first) + ((100.0 - (prior_percent_prev * 100.0)) * compare_odds_second))
+            display_results()
         elif ((compare_odds_first > 0 and compare_odds_second > 0) and (prior_odds_first > 0 and prior_odds_second > 0)):
-            posterior_likelihood = (prior_odds_first * compare_odds_first)/((prior_odds_first * compare_odds_first) + (prior_odds_second * compare_odds_second))
+            posterior_likelihood = float(prior_odds_first * compare_odds_first)/float((prior_odds_first * compare_odds_first) + (prior_odds_second * compare_odds_second))
+            display_results()
         else:
             print "Unusable values were input for prior percent, prior odds, multiplicative ratio, or evidentiary odds."
             print "Returning to initial prior data collection..."
@@ -114,9 +118,23 @@ if __name__ == "__main__":
             prior_percent_prev = iterative_prior
             get_evidence_choice()
 
+    # reset globals
+    def reset_globals():
+        prior_odds_first = 0
+        prior_odds_second = 0
+        prior_percent_prev = 0.0
+        multi_odds_ratio = 0.0
+        compare_odds_first = 0
+        compare_odds_second = 0
+        posterior_odds_first = 0
+        posterior_odds_second = 0
+
     while True:
+        # reset values which ought to be reset
+        reset_globals()
+        
+        # start cascading function execution, up the stack of functions written above
         get_prior_choice()
-        display_results()
 
         while True:
             print "Finally, please select whether you wish to: "
@@ -126,11 +144,9 @@ if __name__ == "__main__":
             task_choice = raw_input()
             if task_choice == "1":
                 get_prior_choice(iterative_prior = posterior_likelihood)
-                break
             elif task_choice == "2":
                 first_run = True
                 get_prior_choice()
-                break
             elif task_choice == "0":
                 exit(0)
             else:
